@@ -1,0 +1,4 @@
+
+ypython:S117"]Rename this local variable "tables_in_DB" to match the regular expression ^[_a-z][a-z0-9_]*$.(çØÿñþÿÿÿÿ
+6python:S125%"Remove this commented out code.(ÍîÍƒ
+upython:S1542+"XRename function "getFoodDataFromXML" to match the regular expression ^[a-z_][a-z0-9_]*$.(ü…ª¿øÿÿÿÿ

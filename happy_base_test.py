@@ -1,54 +1,166 @@
-# import happybase as hp
-import asyncio
-import xml
-from thrift.protocol import TCompactProtocol  # Notice the import: TCompactProtocol [!]
-from thrift.transport.TTransport import TFramedTransport  # Notice the import: TFramedTransport [!]
-from thrift.transport import TSocket
-import hbase
-#import aiohappybase as happybase
-
 import happybase
+import xml.etree.ElementTree as ET
+
+URL = "./data/Food_Display_Table.xml"
 
 
 def get_connected():
+    connection = happybase.Connection("localhost", 9090)
+    connection.open()
 
-        connection = happybase.Connection("localhost", 9090)
-        # connection = hp.Connection("localhost",49189)
-        connection.open()
+    print(connection.tables())
 
-        print(connection.tables() )
-        # print(hbase_cnxn.tables())
-        # return connection
-        connection.close()
+    return connection
+    # connection.close()
 
 
+def create_tabel(connection):
+    tables_in_DB = connection.tables()
+    print(tables_in_DB)
+    if b'foods' not in tables_in_DB:
+        print('in if block')
+        connection.create_table('foods',
+                                {'foodz': dict(), }
+                                )
 
-def put_data_in():
-    connection = get_connected()
+    return connection
+
+    # batch.put()
+    # put'test123', '1', 'cf1:name', 'raju'
+    # row = table.row(b'1')
+    # print(row)
+
+
+def read_data():
+    tree = ET.parse(URL)
+    root = tree.getroot()
+    # print(root[2013][25].text)
+    # print(root[0][0].text)
+    # print(len(list(root)))
+    return root
+
+
+def getFoodDataFromXML(data, connection):
     table = connection.table('foods')
-    input_file = xml.read(open("./data/Food_Display_Table.xml"))
+    batch = table.batch()
 
+    # scan 'foods' , {COLUMNS => 'foodz:Soy'}
+    # batch.put('0', {"foodz:Food_Code": data[0][0].text})
+    # batch.send()
 
-# for row in input_file:
+    print(data[394][5].text)
+    print("hello")
+    # print(len(list(data)))
+    y = 0
+    for x in range(2014):
+        # for y in range(25):
 
-def put_data_test_connection():
-    connection = get_connected()
-    table = connection.table('foods')
-    table.put(b'row-key', {b'family:qual1': b'value1',
-                           b'family:qual2': b'value2'})
+        batch.put(f'{x}', {"foodz:Food_Code": data[x][y].text})
+        y += 1
 
+        batch.put(f'{x}', {"foodz:Display_Name": data[x][y].text})
+        y += 1
 
-    # put_data()
+        batch.put(f'{x}', {"foodz:Portion_Default": data[x][y].text})
+        y += 1
 
-    # connection.create_table(
-    #     'mytable',
-    #     {'cf1': dict(max_versions=10),
-    #      'cf2': dict(max_versions=1, block_cache_enabled=False),
-    #      'cf3': dict(),  # use defaults
-    #      }
-    # )
+        batch.put(f'{x}', {"foodz:Portion_Amount": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Portion_Display_Name": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Factor": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Increment": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Multiplier": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Grains": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Whole_Grains": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Vegetables": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Orange_Vegetables": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Drkgreen_Vegetables": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Starchy_vegetables": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Other_Vegetables": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Fruits": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Milk": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Meats": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Soy": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Drybeans_Peas": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Oils": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Solid_Fats": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Added_Sugars": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Alcohol": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Calories": data[x][y].text})
+        y += 1
+
+        batch.put(f'{x}', {"foodz:Saturated_Fats": data[x][y].text})
+        y = 0
+        # print(data[x][0].text)
+        print(x)
+        batch.send()
 
 
 if __name__ == '__main__':
-    #tr()
-    get_connected()
+    read_data()
+    connection = get_connected()
+    create_tabel(connection)
+    getFoodDataFromXML(read_data(), create_tabel(connection))
+    connection.close()
+
+# batch.put(f'{x}', {"foodz:Food_Code": data[x][y].text,
+#                            "foodz:Display_Name": data[x][y].text,
+#                            "foodz:Portion_Default": data[x][y].text,
+#                            "foodz:Portion_Amount": data[x][y].text, "foodz:Portion_Display_Name": data[x][y].text,
+#                            "foodz:Factor": data[x][y].text,
+#                            "foodz:Increment": data[x][y].text, "foodz:Multiplier": data[x][y].text,
+#                            "foodz:Grains": data[x][y].text,
+#                            "foodz:Whole_Grains": data[x][y].text, "foodz:Vegetables": data[x][y].text,
+#                            "foodz:Orange_Vegetables": data[x][y].text,
+#                            "foodz:Drkgreen_Vegetables": data[x][y].text,
+#                            "foodz:Starchy_vegetables": data[x][y].text,
+#                            "foodz:Other_Vegetables": data[x][y].text,
+#                            "foodz:Fruits": data[x][y].text, "foodz:Milk": data[x][y].text,
+#                            "foodz:Meats": data[x][y].text,
+#                            "foodz:Soy": data[x][y].text, "foodz:Drybeans_Peas": data[x][y].text,
+#                            "foodz:Oils": data[x][y].text,
+#                            "foodz:Solid_Fats": data[x][y].text, "foodz:Solid_Fats": data[x][y].text,
+#                            "foodz:Added_Sugars": data[x][y].text,
+#                            "foodz:Alcohol": data[x][y].text, "foodz:Calories": data[x][y].text,
+#                            "foodz:Saturated_Fats": data[x][y].text})
